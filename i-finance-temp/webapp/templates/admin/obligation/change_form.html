@@ -1,0 +1,31 @@
+{% extends "django_object_actions/change_form.html" %}
+{% block admin_change_form_document_ready %}
+    {{ block.super }}
+    <script>
+        document.getElementById("id_type").addEventListener("change", function () {
+            {# mujtahid representative dropdown #}
+            let selectTag = document.getElementById('id_mujtahid_repr');
+
+            {# clear existing list #}
+            let options = document.querySelectorAll('#id_mujtahid_repr option');
+            options.forEach((o, index) => {
+                if (index > 0) {
+                    o.remove()
+                }
+            });
+
+            const obligation_type_id = document.getElementById("id_type").value;
+            fetch(window.origin + '/api/mujtahid-representative?' + new URLSearchParams({obligation_type: obligation_type_id}))
+                .then(function (response) {
+                    response.json().then(res => {
+                        res.map((repr, i) => {
+                            let opt = document.createElement("option");
+                            opt.value = repr.id;
+                            opt.innerHTML = repr.repr;
+                            selectTag.append(opt);
+                        });
+                    })
+                });
+        });
+    </script>
+{% endblock %}
